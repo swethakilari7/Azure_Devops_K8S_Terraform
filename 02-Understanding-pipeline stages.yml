@@ -15,15 +15,18 @@ stages:
   - job: FirstJob
     steps:
     - bash: echo Build First Job
+    - bash: echo $(PiplineLevelVariable)
   - job: SecondJob
     steps:
     - bash: echo Build Second Job     
 - stage: DevDeploy
+  variables:
+    environment: Dev
   dependsOn: Build
   jobs: 
   - job: DevDeployJob
     steps:
-    - bash: echo Dev Deploy Job
+    - bash: echo &(environment) Deploy Job
 - stage: QADeploy
   dependsOn: Build
   jobs: 
