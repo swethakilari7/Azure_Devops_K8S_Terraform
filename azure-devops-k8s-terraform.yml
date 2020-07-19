@@ -1,0 +1,30 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: echo K8S Terraform Azure!
+  displayName: 'Run a one-line script'
+- task: DownloadSecureFile@1
+  name: publickey
+  inputs:
+    secureFile: 'azure_rsa.pub'
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+- task: TerraformCLI@0
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes/variables.tf'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_id) -var ssh_public_key=$(publickey.secureFilePath)'
+    backendType: 'azurerm'
+    backendServiceArm: 'Azure-resource-manager-service-connection'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'terraform-resource-gp'
+    backendAzureRmResourceGroupLocation: 'westeurope'
+    backendAzureRmStorageAccountName: 'storageaccountswethak8s'
+    backendAzureRmContainerName: 'storageaccountswethacontainer'
+    backendAzureRmKey: 'k8s-dev-tfstate'
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
